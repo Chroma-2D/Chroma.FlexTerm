@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Chroma" Version="0.38.1" />
+      <PackageReference Include="Chroma.SabreVGA" Version="6.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Fonts\Acer_9x14.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\ATI_9x16.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\IGS_8x16.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\MBytePC_8x16.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\Tandy1K_II_9x14.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\ToshibaSat_8x14.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\Trident_8x16.ttf" />
+      <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
+    </ItemGroup>
+</Project>
