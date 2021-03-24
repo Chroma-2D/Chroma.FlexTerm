@@ -4,18 +4,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Chroma" Version="0.38.1" />
-      <PackageReference Include="Chroma.SabreVGA" Version="6.1.0" />
+        <PackageReference Include="Chroma.SabreVGA" Version="7.0.0" />
+        <PackageReference Include="Chroma" Version="0.40.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resources\Fonts\Acer_9x14.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\ATI_9x16.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\IGS_8x16.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\MBytePC_8x16.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\Tandy1K_II_9x14.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\ToshibaSat_8x14.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\Trident_8x16.ttf" />
-      <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Acer_9x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\ATI_9x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IGS_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\MBytePC_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Tandy1K_II_9x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\ToshibaSat_8x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Trident_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
+        <None Remove="Resources\Fonts\CallingCode.ttf" />
+        <None Remove="Resources\Fonts\PhoenixVGA_8x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\PhoenixVGA_8x14.ttf" />
+        <None Remove="Resources\Fonts\Verite_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Verite_8x16.ttf" />
+        <None Remove="Resources\Fonts\IBM_VGA_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_VGA_8x16.ttf" />
+        <None Remove="Resources\Fonts\PxPlus_AST_PremiumExec.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\AST_8x19.ttf" />
+        <None Remove="Resources\Fonts\MODENINE.TTF" />
+        <None Remove="Resources\Fonts\JetBrainsMono.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Chroma.SabreVGA\Chroma.SabreVGA\Chroma.SabreVGA.csproj" />
     </ItemGroup>
 </Project>
