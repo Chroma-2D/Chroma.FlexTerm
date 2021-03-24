@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
+using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Chroma.SabreVGA;
@@ -14,7 +15,7 @@ namespace Chroma.FlexTerm
     public class Terminal
     {
         public VgaScreen VgaScreen { get; }
-        
+
         private Queue<char> _inputQueue = new();
         private List<char> _inputBuffer = new();
         private int _inputBufferIndex;
@@ -32,7 +33,7 @@ namespace Chroma.FlexTerm
         public bool IsReadingInput => _isReadingChar || _isReadingString;
         public bool EchoInput { get; set; } = true;
 
-        public ConsoleFont Font => VgaScreen.Font;
+        public IFontProvider Font => VgaScreen.Font;
 
         public Vector2 Position
         {
@@ -54,12 +55,13 @@ namespace Chroma.FlexTerm
         }
 
         public Terminal(VgaScreen vgaScreen, TerminalFont font)
+            : this(vgaScreen)
         {
-            VgaScreen = vgaScreen;
-            VgaScreen.Font = new ConsoleFont(LoadEmbeddedFont(font));
+            VgaScreen.Font = LoadEmbeddedFont(font);
 
             var cellSize = DetermineCellSizeForFont(font);
             VgaScreen.SetCellSizes(cellSize.Width, cellSize.Height);
+            VgaScreen.RecalculateDimensions();
         }
 
         public Terminal(Vector2 position, Size size, TerminalFont font)
@@ -69,7 +71,7 @@ namespace Chroma.FlexTerm
             VgaScreen = new VgaScreen(
                 position,
                 size,
-                new ConsoleFont(LoadEmbeddedFont(font)),
+                LoadEmbeddedFont(font),
                 cellSize.Width,
                 cellSize.Height
             );
@@ -199,11 +201,11 @@ namespace Chroma.FlexTerm
             if (_isReadingKey)
             {
                 _isReadingKey = false;
-                
+
                 InputReceived?.Invoke(this, new TerminalInputEventArgs(e.KeyCode));
                 return;
             }
-            
+
             switch (e.KeyCode)
             {
                 case KeyCode.Return:
@@ -322,20 +324,10 @@ namespace Chroma.FlexTerm
 
         private void Printable(char c)
         {
-            bool hasGlyph;
-            if (Font.IsBitmapFont)
+            if (!Font.HasGlyph(c))
             {
-                hasGlyph = Font.BitmapFont.HasGlyph(c);
-            }
-            else
-            {
-                hasGlyph = Font.TrueTypeFont.HasGlyph(c);
-            }
-
-            if (!hasGlyph)
-            {
-                // Assumes font has ^?[] and digit glyphs at least.
-                Write("^?[" + ((int)c).ToString("X2") + "]");
+                if (Font.HasGlyph('?'))
+                    Write("?");
             }
             else
             {
@@ -344,7 +336,7 @@ namespace Chroma.FlexTerm
                     VgaScreen.Cursor.X,
                     VgaScreen.Cursor.Y
                 );
-                    
+
                 AdvanceCursor();
             }
         }
@@ -356,7 +348,7 @@ namespace Chroma.FlexTerm
                 _isReadingString = false;
 
                 var str = new string(_inputBuffer.ToArray());
-                
+
                 _inputBufferIndex = 0;
                 _inputBuffer.Clear();
 
@@ -426,17 +418,11 @@ namespace Chroma.FlexTerm
                 .GetExecutingAssembly()
                 .GetManifestResourceStream(embeddedResourceString);
 
-            var ttf = new TrueTypeFont(
+            return new TrueTypeFont(
                 assemblyResourceStream,
                 DetermineFontSize(font),
-                new string(CodePage.BuildCodePage437())
-            )
-            {
-                ForceAutoHinting = false,
-            };
-
-            ttf.Atlas.FilteringMode = TextureFilteringMode.NearestNeighbor;
-            return ttf;
+                new string(BuildCodePage(font))
+            );
         }
 
         private Size DetermineCellSizeForFont(TerminalFont font)
@@ -444,13 +430,11 @@ namespace Chroma.FlexTerm
             return font switch
             {
                 TerminalFont.Acer_9x14 => new(9, 14),
-                TerminalFont.ATI_9x16 => new(9, 16),
-                TerminalFont.IGS_8x16 => new(8, 16),
-                TerminalFont.MBytePC_8x16 => new(8, 16),
                 TerminalFont.Tandy1K_II_9x14 => new(9, 14),
                 TerminalFont.ToshibaSat_8x14 => new(8, 14),
-                TerminalFont.Trident_8x16 => new(8, 16),
                 TerminalFont.Copam_8x8 => new(8, 8),
+                TerminalFont.PhoenixVGA_8x14 => new(8, 14),
+                TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
             };
         }
@@ -460,7 +444,19 @@ namespace Chroma.FlexTerm
             return font switch
             {
                 TerminalFont.Copam_8x8 => 8,
+                TerminalFont.AST_8x19 => 20,
                 _ => 16
+            };
+        }
+
+        private char[] BuildCodePage(TerminalFont font)
+        {
+            return font switch
+            {
+                TerminalFont.ToshibaSat_8x14 => CodePage.BuildCodePage437Plus(),
+                TerminalFont.IBM_VGA_8x16 => CodePage.BuildCodePage437Plus(),
+                TerminalFont.AST_8x19 => CodePage.BuildCodePage437Plus(),
+                _ => CodePage.BuildCodePage437()
             };
         }
 
