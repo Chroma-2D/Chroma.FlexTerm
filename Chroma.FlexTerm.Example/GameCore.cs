@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -11,7 +10,8 @@ namespace Chroma.FlexTerm.Example
 
         public GameCore() : base(new(false, false))
         {
-            Window.GoWindowed(new(1024, 660));
+            Window.GoWindowed(new(1024, 640));
+            Window.CenterOnScreen();
         }
 
         protected override void LoadContent()
@@ -19,16 +19,8 @@ namespace Chroma.FlexTerm.Example
             _terminal = new Terminal(
                 Vector2.Zero,
                 Window.Size,
-                TerminalFont.IBM_VGA_8x16
+                TerminalFont.IBM_Model3x_8x16
             );
-
-            _terminal.InputReceived += (_, args) =>
-            {
-                if (args.Text == "æ")
-                {
-                    _terminal.Write("<insert random kid having their fingers amputated by car door here>\n");
-                }
-            };
 
             var cp437 = "A quick brown fox jumps over the lazy dog.\n" +
                         "0123456789 ¿?¡!`'\"., <>()[]{} &@%*^#$\\/\n" +
@@ -73,18 +65,6 @@ namespace Chroma.FlexTerm.Example
             {
                 _terminal.Write("C:\\>");
                 _terminal.ReadLine();
-            }
-
-            for (var y = _terminal.VgaScreen.Margins.Top; y <= _terminal.VgaScreen.WindowRows; y++)
-            {
-                for (var x = _terminal.VgaScreen.Margins.Left; x <= _terminal.VgaScreen.WindowColumns; x++)
-                {
-                    _terminal.VgaScreen[x, y].Foreground = new(
-                        (byte)((2 * y + (int)PerformanceCounter.LifetimeFrames) % 256),
-                        (byte)((4 * y + (int)PerformanceCounter.LifetimeFrames) % 256),
-                        (byte)((6 * y + (int)PerformanceCounter.LifetimeFrames) % 256)
-                    );
-                }
             }
         }
 
