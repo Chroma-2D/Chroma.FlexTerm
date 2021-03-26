@@ -28,6 +28,12 @@
         <EmbeddedResource Include="Resources\Fonts\AST_8x19.ttf" />
         <None Remove="Resources\Fonts\MODENINE.TTF" />
         <None Remove="Resources\Fonts\JetBrainsMono.ttf" />
+        <None Remove="Resources\Fonts\SperryPC_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\SperryPC_8x16.ttf" />
+        <None Remove="Resources\Fonts\IBM_CGA_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_CGA_8x8.ttf" />
+        <None Remove="Resources\Fonts\IBM_Model3x_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_Model3x_8x16.ttf" />
     </ItemGroup>
 
     <ItemGroup>

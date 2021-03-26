@@ -34,19 +34,6 @@ namespace Chroma.FlexTerm
         public bool EchoInput { get; set; } = true;
 
         public IFontProvider Font => VgaScreen.Font;
-
-        public Vector2 Position
-        {
-            get => VgaScreen.Position;
-            set => VgaScreen.Position = value;
-        }
-
-        public Size Size
-        {
-            get => VgaScreen.Size;
-            set => VgaScreen.Size = value;
-        }
-
         public event EventHandler<TerminalInputEventArgs> InputReceived;
 
         public Terminal(VgaScreen vgaScreen)
@@ -248,8 +235,63 @@ namespace Chroma.FlexTerm
                     break;
             }
         }
+        
+        
+        public void Backspace()
+        {
+            if (!_isReadingString)
+                return;
 
-        protected void AdvanceCursor()
+            if (_inputBufferIndex - 1 >= 0)
+            {
+                UpdateInputVisual(true);
+
+                _inputBuffer.RemoveAt(--_inputBufferIndex);
+                RetractCursor();
+
+                _pendingVisualUpdate = true;
+            }
+        }
+
+        public void Delete()
+        {
+            if (!_isReadingString)
+                return;
+
+            if (_inputBufferIndex < _inputBuffer.Count)
+            {
+                UpdateInputVisual(true);
+                _inputBuffer.RemoveAt(_inputBufferIndex);
+
+                _pendingVisualUpdate = true;
+            }
+        }
+
+        public void StartOfInput()
+        {
+            if (!_isReadingString)
+                return;
+
+            while (_inputBufferIndex != 0)
+            {
+                _inputBufferIndex--;
+                RetractCursor();
+            }
+        }
+
+        public void EndOfInput()
+        {
+            if (!_isReadingString)
+                return;
+
+            while (_inputBufferIndex < _inputBuffer.Count)
+            {
+                _inputBufferIndex++;
+                AdvanceCursor();
+            }
+        }
+
+        public void AdvanceCursor()
         {
             if (VgaScreen.Cursor.X >= VgaScreen.WindowColumns)
             {
@@ -261,7 +303,7 @@ namespace Chroma.FlexTerm
             }
         }
 
-        protected void RetractCursor()
+        public void RetractCursor()
         {
             if (VgaScreen.Cursor.X - 1 >= VgaScreen.Margins.Left)
             {
@@ -277,7 +319,7 @@ namespace Chroma.FlexTerm
             }
         }
 
-        protected void NextLine()
+        public void NextLine()
         {
             VgaScreen.Cursor.X = 0;
 
@@ -356,60 +398,6 @@ namespace Chroma.FlexTerm
             }
         }
 
-        private void Backspace()
-        {
-            if (!_isReadingString)
-                return;
-
-            if (_inputBufferIndex - 1 >= 0)
-            {
-                UpdateInputVisual(true);
-
-                _inputBuffer.RemoveAt(--_inputBufferIndex);
-                RetractCursor();
-
-                _pendingVisualUpdate = true;
-            }
-        }
-
-        private void Delete()
-        {
-            if (!_isReadingString)
-                return;
-
-            if (_inputBufferIndex < _inputBuffer.Count)
-            {
-                UpdateInputVisual(true);
-                _inputBuffer.RemoveAt(_inputBufferIndex);
-
-                _pendingVisualUpdate = true;
-            }
-        }
-
-        private void StartOfInput()
-        {
-            if (!_isReadingString)
-                return;
-
-            while (_inputBufferIndex != 0)
-            {
-                _inputBufferIndex--;
-                RetractCursor();
-            }
-        }
-
-        private void EndOfInput()
-        {
-            if (!_isReadingString)
-                return;
-
-            while (_inputBufferIndex < _inputBuffer.Count)
-            {
-                _inputBufferIndex++;
-                AdvanceCursor();
-            }
-        }
-
         private TrueTypeFont LoadEmbeddedFont(TerminalFont font)
         {
             var embeddedResourceString = $"Chroma.FlexTerm.Resources.Fonts.{font.ToString()}.ttf";
@@ -433,6 +421,7 @@ namespace Chroma.FlexTerm
                 TerminalFont.Tandy1K_II_9x14 => new(9, 14),
                 TerminalFont.ToshibaSat_8x14 => new(8, 14),
                 TerminalFont.Copam_8x8 => new(8, 8),
+                TerminalFont.IBM_CGA_8x8 => new(8, 8),
                 TerminalFont.PhoenixVGA_8x14 => new(8, 14),
                 TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
@@ -444,6 +433,7 @@ namespace Chroma.FlexTerm
             return font switch
             {
                 TerminalFont.Copam_8x8 => 8,
+                TerminalFont.IBM_CGA_8x8 => 8,
                 TerminalFont.AST_8x19 => 20,
                 _ => 16
             };
@@ -456,6 +446,7 @@ namespace Chroma.FlexTerm
                 TerminalFont.ToshibaSat_8x14 => CodePage.BuildCodePage437Plus(),
                 TerminalFont.IBM_VGA_8x16 => CodePage.BuildCodePage437Plus(),
                 TerminalFont.AST_8x19 => CodePage.BuildCodePage437Plus(),
+                TerminalFont.IBM_CGA_8x8 => CodePage.BuildCodePage437Plus(),
                 _ => CodePage.BuildCodePage437()
             };
         }
