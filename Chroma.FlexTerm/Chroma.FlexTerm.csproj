@@ -34,6 +34,12 @@
         <EmbeddedResource Include="Resources\Fonts\IBM_CGA_8x8.ttf" />
         <None Remove="Resources\Fonts\IBM_Model3x_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\IBM_Model3x_8x16.ttf" />
+        <None Remove="Resources\Fonts\EverexME_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\EverexME_8x16.ttf" />
+        <None Remove="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
+        <None Remove="Resources\Fonts\EuroPC_9x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\EuroPC_9x14.ttf" />
     </ItemGroup>
 
     <ItemGroup>

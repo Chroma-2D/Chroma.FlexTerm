@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Input;
+using Chroma.SabreVGA;
 
 namespace Chroma.FlexTerm.Example
 {
@@ -19,8 +20,10 @@ namespace Chroma.FlexTerm.Example
             _terminal = new Terminal(
                 Vector2.Zero,
                 Window.Size,
-                TerminalFont.IBM_Model3x_8x16
+                TerminalFont.IBM_VGA_8x16
             );
+
+            ClearToColor(_terminal.VgaScreen, Color.MediumBlue, Color.LightGray);
 
             var cp437 = "A quick brown fox jumps over the lazy dog.\n" +
                         "0123456789 ¿?¡!`'\"., <>()[]{} &@%*^#$\\/\n" +
@@ -61,6 +64,7 @@ namespace Chroma.FlexTerm.Example
         protected override void Update(float delta)
         {
             _terminal.Update(delta);
+            
             if (!_terminal.IsReadingInput)
             {
                 _terminal.Write("C:\\>");
@@ -86,6 +90,18 @@ namespace Chroma.FlexTerm.Example
         protected override void KeyPressed(KeyEventArgs e)
         {
             _terminal.KeyPressed(e);
+        }
+
+        private void ClearToColor(VgaScreen screen, Color bg, Color fg)
+        {
+            screen.ActiveForegroundColor = fg;
+            screen.ActiveBackgroundColor = bg;
+            
+            for (var i = 0; i < screen.TotalColumns * screen.TotalRows; i++)
+            {
+                screen[i].Background = bg;
+                screen[i].Foreground = fg;
+            }
         }
     }
 }

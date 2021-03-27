@@ -8,11 +8,12 @@ using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
+using Chroma.MemoryManagement;
 using Chroma.SabreVGA;
 
 namespace Chroma.FlexTerm
 {
-    public class Terminal
+    public class Terminal : DisposableResource
     {
         public VgaScreen VgaScreen { get; }
 
@@ -45,8 +46,8 @@ namespace Chroma.FlexTerm
             : this(vgaScreen)
         {
             VgaScreen.Font = LoadEmbeddedFont(font);
-
             var cellSize = DetermineCellSizeForFont(font);
+            
             VgaScreen.SetCellSizes(cellSize.Width, cellSize.Height);
             VgaScreen.RecalculateDimensions();
         }
@@ -64,6 +65,7 @@ namespace Chroma.FlexTerm
             );
 
             VgaScreen.Cursor.Shape = CursorShape.Underscore;
+            
             SetDefaultControlCodes();
         }
 
@@ -235,8 +237,8 @@ namespace Chroma.FlexTerm
                     break;
             }
         }
-        
-        
+
+
         public void Backspace()
         {
             if (!_isReadingString)
@@ -339,7 +341,7 @@ namespace Chroma.FlexTerm
             }
         }
 
-        private void UpdateInputVisual(bool clear)
+        protected virtual void UpdateInputVisual(bool clear)
         {
             if (!EchoInput)
                 return;
@@ -364,7 +366,7 @@ namespace Chroma.FlexTerm
             VgaScreen.Cursor.Y = realY;
         }
 
-        private void Printable(char c)
+        protected virtual void Printable(char c)
         {
             if (!Font.HasGlyph(c))
             {
@@ -383,7 +385,7 @@ namespace Chroma.FlexTerm
             }
         }
 
-        private void FlushInputBuffer()
+        protected virtual void FlushInputBuffer()
         {
             if (_isReadingString)
             {
@@ -398,7 +400,7 @@ namespace Chroma.FlexTerm
             }
         }
 
-        private TrueTypeFont LoadEmbeddedFont(TerminalFont font)
+        protected TrueTypeFont LoadEmbeddedFont(TerminalFont font)
         {
             var embeddedResourceString = $"Chroma.FlexTerm.Resources.Fonts.{font.ToString()}.ttf";
 
@@ -413,33 +415,36 @@ namespace Chroma.FlexTerm
             );
         }
 
-        private Size DetermineCellSizeForFont(TerminalFont font)
+        protected Size DetermineCellSizeForFont(TerminalFont font)
         {
             return font switch
             {
-                TerminalFont.Acer_9x14 => new(9, 14),
-                TerminalFont.Tandy1K_II_9x14 => new(9, 14),
-                TerminalFont.ToshibaSat_8x14 => new(8, 14),
                 TerminalFont.Copam_8x8 => new(8, 8),
                 TerminalFont.IBM_CGA_8x8 => new(8, 8),
+                TerminalFont.NEC_MultiSpeed_8x8 => new(8, 8),
+                TerminalFont.ToshibaSat_8x14 => new(8, 14),
                 TerminalFont.PhoenixVGA_8x14 => new(8, 14),
+                TerminalFont.Tandy1K_II_9x14 => new(9, 14),
+                TerminalFont.EuroPC_9x14 => new(9, 14),
+                TerminalFont.Acer_9x14 => new(9, 14),
                 TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
             };
         }
 
-        private int DetermineFontSize(TerminalFont font)
+        protected int DetermineFontSize(TerminalFont font)
         {
             return font switch
             {
                 TerminalFont.Copam_8x8 => 8,
                 TerminalFont.IBM_CGA_8x8 => 8,
+                TerminalFont.NEC_MultiSpeed_8x8 => 8,
                 TerminalFont.AST_8x19 => 20,
                 _ => 16
             };
         }
 
-        private char[] BuildCodePage(TerminalFont font)
+        protected virtual char[] BuildCodePage(TerminalFont font)
         {
             return font switch
             {
@@ -451,7 +456,7 @@ namespace Chroma.FlexTerm
             };
         }
 
-        private void SetDefaultControlCodes()
+        protected void SetDefaultControlCodes()
         {
             SetControlCode('\n', (t) => { t.NextLine(); });
             SetControlCode('\r', (t) => { t.VgaScreen.Cursor.X = t.VgaScreen.Margins.Left; });
