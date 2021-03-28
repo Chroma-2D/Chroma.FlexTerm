@@ -17,32 +17,15 @@
         <EmbeddedResource Include="Resources\Fonts\ToshibaSat_8x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Trident_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
-        <None Remove="Resources\Fonts\CallingCode.ttf" />
-        <None Remove="Resources\Fonts\PhoenixVGA_8x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\PhoenixVGA_8x14.ttf" />
-        <None Remove="Resources\Fonts\Verite_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Verite_8x16.ttf" />
-        <None Remove="Resources\Fonts\IBM_VGA_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\IBM_VGA_8x16.ttf" />
-        <None Remove="Resources\Fonts\PxPlus_AST_PremiumExec.ttf" />
         <EmbeddedResource Include="Resources\Fonts\AST_8x19.ttf" />
-        <None Remove="Resources\Fonts\MODENINE.TTF" />
-        <None Remove="Resources\Fonts\JetBrainsMono.ttf" />
-        <None Remove="Resources\Fonts\SperryPC_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\SperryPC_8x16.ttf" />
-        <None Remove="Resources\Fonts\IBM_CGA_8x8.ttf" />
         <EmbeddedResource Include="Resources\Fonts\IBM_CGA_8x8.ttf" />
-        <None Remove="Resources\Fonts\IBM_Model3x_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\IBM_Model3x_8x16.ttf" />
-        <None Remove="Resources\Fonts\EverexME_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\EverexME_8x16.ttf" />
-        <None Remove="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
         <EmbeddedResource Include="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
-        <None Remove="Resources\Fonts\EuroPC_9x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\EuroPC_9x14.ttf" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\Chroma.SabreVGA\Chroma.SabreVGA\Chroma.SabreVGA.csproj" />
     </ItemGroup>
 </Project>
