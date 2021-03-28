@@ -5,7 +5,6 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Chroma.MemoryManagement;
@@ -15,8 +14,6 @@ namespace Chroma.FlexTerm
 {
     public class Terminal : DisposableResource
     {
-        public VgaScreen VgaScreen { get; }
-
         private Queue<char> _inputQueue = new();
         private List<char> _inputBuffer = new();
         private int _inputBufferIndex;
@@ -31,14 +28,18 @@ namespace Chroma.FlexTerm
 
         private Dictionary<char, Action<Terminal>> _controlCodes = new();
 
+        public VgaScreen VgaScreen { get; }
+
         public bool IsReadingInput => _isReadingChar || _isReadingString;
         public bool EchoInput { get; set; } = true;
 
-        public IFontProvider Font => VgaScreen.Font;
         public event EventHandler<TerminalInputEventArgs> InputReceived;
 
         public Terminal(VgaScreen vgaScreen)
         {
+            if (VgaScreen == null)
+                throw new ArgumentNullException(nameof(vgaScreen), "Terminal needs a VGA screen to function.");
+
             VgaScreen = vgaScreen;
         }
 
@@ -47,7 +48,7 @@ namespace Chroma.FlexTerm
         {
             VgaScreen.Font = LoadEmbeddedFont(font);
             var cellSize = DetermineCellSizeForFont(font);
-            
+
             VgaScreen.SetCellSizes(cellSize.Width, cellSize.Height);
             VgaScreen.RecalculateDimensions();
         }
@@ -65,7 +66,7 @@ namespace Chroma.FlexTerm
             );
 
             VgaScreen.Cursor.Shape = CursorShape.Underscore;
-            
+
             SetDefaultControlCodes();
         }
 
@@ -368,9 +369,9 @@ namespace Chroma.FlexTerm
 
         protected virtual void Printable(char c)
         {
-            if (!Font.HasGlyph(c))
+            if (!VgaScreen.Font.HasGlyph(c))
             {
-                if (Font.HasGlyph('?'))
+                if (VgaScreen.Font.HasGlyph('?'))
                     Write("?");
             }
             else
@@ -400,13 +401,24 @@ namespace Chroma.FlexTerm
             }
         }
 
-        protected TrueTypeFont LoadEmbeddedFont(TerminalFont font)
+        private TrueTypeFont LoadEmbeddedFont(TerminalFont font, bool retrying = false)
         {
             var embeddedResourceString = $"Chroma.FlexTerm.Resources.Fonts.{font.ToString()}.ttf";
 
             using var assemblyResourceStream = Assembly
                 .GetExecutingAssembly()
                 .GetManifestResourceStream(embeddedResourceString);
+
+            if (assemblyResourceStream == null)
+            {
+                if (!retrying)
+                    return LoadEmbeddedFont(TerminalFont.ToshibaSat_8x14, true);
+                
+                throw new ArgumentOutOfRangeException(
+                    nameof(font),
+                    "Couldn't find the requested embedded font and the fallback has failed."
+                );
+            }
 
             return new TrueTypeFont(
                 assemblyResourceStream,
@@ -415,7 +427,7 @@ namespace Chroma.FlexTerm
             );
         }
 
-        protected Size DetermineCellSizeForFont(TerminalFont font)
+        private Size DetermineCellSizeForFont(TerminalFont font)
         {
             return font switch
             {
@@ -432,7 +444,7 @@ namespace Chroma.FlexTerm
             };
         }
 
-        protected int DetermineFontSize(TerminalFont font)
+        private int DetermineFontSize(TerminalFont font)
         {
             return font switch
             {

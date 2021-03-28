@@ -20,10 +20,14 @@ namespace Chroma.FlexTerm.Example
             _terminal = new Terminal(
                 Vector2.Zero,
                 Window.Size,
-                TerminalFont.IBM_VGA_8x16
+                TerminalFont.Trident_8x16
             );
 
-            ClearToColor(_terminal.VgaScreen, Color.MediumBlue, Color.LightGray);
+            ClearToColor(
+                _terminal.VgaScreen, 
+                new Color(0, 0, 255), 
+                new Color(192, 192, 192)
+            );
 
             var cp437 = "A quick brown fox jumps over the lazy dog.\n" +
                         "0123456789 ¿?¡!`'\"., <>()[]{} &@%*^#$\\/\n" +
