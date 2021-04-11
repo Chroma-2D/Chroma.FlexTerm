@@ -377,9 +377,9 @@ namespace Chroma.FlexTerm
             else
             {
                 VgaScreen.PutCharAt(
-                    c,
                     VgaScreen.Cursor.X,
-                    VgaScreen.Cursor.Y
+                    VgaScreen.Cursor.Y,
+                    c
                 );
 
                 AdvanceCursor();
