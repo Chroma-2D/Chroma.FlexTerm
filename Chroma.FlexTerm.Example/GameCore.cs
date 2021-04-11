@@ -20,12 +20,12 @@ namespace Chroma.FlexTerm.Example
             _terminal = new Terminal(
                 Vector2.Zero,
                 Window.Size,
-                TerminalFont.Trident_8x16
+                TerminalFont.ToshibaSat_8x14
             );
 
             ClearToColor(
                 _terminal.VgaScreen, 
-                new Color(0, 0, 255), 
+                new Color(0, 0, 0), 
                 new Color(192, 192, 192)
             );
 
