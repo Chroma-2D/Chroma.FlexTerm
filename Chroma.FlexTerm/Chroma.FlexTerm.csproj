@@ -8,12 +8,15 @@
         <PackageId>Chroma.FlexTerm</PackageId>
         <Version>1.0.0</Version>
         
-        <Title>Chroma FlexTerm Emulator</Title>
-        <Author>Tomasz Cichoń</Author>
+        <Author>Ciastex</Author>
+        <RepositoryType>git</RepositoryType>
+        <Description>Flexible terminal emulator based on the SabreVGA text engine.</Description>
+        <RepositoryUrl>https://github.com/Chroma-2D/Chroma.FlexTerm</RepositoryUrl>
+        <PackageTags>textmode;text;chroma;terminal;console;vga;game;netcore;net5</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Chroma.SabreVGA" Version="7.0.0" />
+        <PackageReference Include="Chroma.SabreVGA" Version="8.0.0" />
         <PackageReference Include="Chroma" Version="0.40.1" />
     </ItemGroup>
 
