@@ -6,7 +6,7 @@
     
     <PropertyGroup>
         <PackageId>Chroma.FlexTerm</PackageId>
-        <Version>1.0.0</Version>
+        <Version>2.0.0</Version>
         
         <Author>Ciastex</Author>
         <RepositoryType>git</RepositoryType>
@@ -16,8 +16,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Chroma.SabreVGA" Version="8.0.0" />
-        <PackageReference Include="Chroma" Version="0.40.1" />
+        <PackageReference Include="Chroma.SabreVGA" Version="9.0.0" />
+        <PackageReference Include="Chroma" Version="0.43.0" />
     </ItemGroup>
 
     <ItemGroup>
