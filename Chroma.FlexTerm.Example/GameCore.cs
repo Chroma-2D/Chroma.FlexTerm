@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.SabreVGA;
@@ -11,8 +12,7 @@ namespace Chroma.FlexTerm.Example
 
         public GameCore() : base(new(false, false))
         {
-            Window.GoWindowed(new(1024, 640));
-            Window.CenterOnScreen();
+            Window.Mode.SetWindowed(1024, 640, true);
         }
 
         protected override void LoadContent()
@@ -74,6 +74,8 @@ namespace Chroma.FlexTerm.Example
                 _terminal.Write("C:\\>");
                 _terminal.ReadLine();
             }
+
+            Window.Title = PerformanceCounter.FPS.ToString();
         }
 
         protected override void FixedUpdate(float delta)
