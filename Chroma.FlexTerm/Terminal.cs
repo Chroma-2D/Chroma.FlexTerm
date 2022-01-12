@@ -296,7 +296,7 @@ namespace Chroma.FlexTerm
 
         public void AdvanceCursor()
         {
-            if (VgaScreen.Cursor.X >= VgaScreen.WindowColumns)
+            if (VgaScreen.Cursor.X - VgaScreen.Margins.Left >= VgaScreen.WindowColumns - 1)
             {
                 NextLine();
             }
@@ -318,7 +318,7 @@ namespace Chroma.FlexTerm
                     return;
 
                 VgaScreen.Cursor.Y--;
-                VgaScreen.Cursor.X = VgaScreen.WindowColumns;
+                VgaScreen.Cursor.X = VgaScreen.WindowColumns + VgaScreen.Margins.Left;
             }
         }
 
@@ -326,7 +326,7 @@ namespace Chroma.FlexTerm
         {
             VgaScreen.Cursor.X = 0;
 
-            if (VgaScreen.Cursor.Y >= VgaScreen.WindowRows)
+            if (VgaScreen.Cursor.Y - VgaScreen.Margins.Top >= VgaScreen.WindowRows - 1)
             {
                 VgaScreen.Scroll();
 
