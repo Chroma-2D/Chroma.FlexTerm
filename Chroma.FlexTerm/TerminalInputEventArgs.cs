@@ -9,11 +9,13 @@ namespace Chroma.FlexTerm
         
         public KeyCode? Key { get; }
         public string Text { get; }
+        public string[] Tokens { get; }
 
-        internal TerminalInputEventArgs(string text)
+        internal TerminalInputEventArgs(string text, string[] tokens)
         {
             Text = text;
             Type = InputType.Text;
+            Tokens = tokens;
         }
 
         internal TerminalInputEventArgs(KeyCode key)

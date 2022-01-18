@@ -9,6 +9,7 @@ using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Chroma.MemoryManagement;
 using Chroma.SabreVGA;
+using Cursor = Chroma.Input.Cursor;
 
 namespace Chroma.FlexTerm
 {
@@ -37,10 +38,11 @@ namespace Chroma.FlexTerm
 
         public Terminal(VgaScreen vgaScreen)
         {
-            if (VgaScreen == null)
+            if (vgaScreen == null)
                 throw new ArgumentNullException(nameof(vgaScreen), "Terminal needs a VGA screen to function.");
-
+            
             VgaScreen = vgaScreen;
+            SetDefaultControlCodes();
         }
 
         public Terminal(VgaScreen vgaScreen, TerminalFont font)
@@ -66,8 +68,6 @@ namespace Chroma.FlexTerm
             );
 
             VgaScreen.Cursor.Shape = CursorShape.Underscore;
-
-            SetDefaultControlCodes();
         }
 
         public void SetControlCode(char c, Action<Terminal> handler)
@@ -140,7 +140,12 @@ namespace Chroma.FlexTerm
 
         public void Update(float delta)
         {
-            VgaScreen.Cursor.ForceHidden = !IsReadingInput;
+            if (!IsReadingInput)
+            {
+                VgaScreen.Cursor.Blink = false;
+                VgaScreen.Cursor.Visible = false;
+            }
+            
             VgaScreen.Update(delta);
 
             if (_pendingVisualUpdate)
@@ -158,7 +163,9 @@ namespace Chroma.FlexTerm
 
                 if (_isReadingChar)
                 {
-                    InputReceived?.Invoke(this, new TerminalInputEventArgs(c.ToString()));
+                    var ret = c.ToString();
+                    
+                    InputReceived?.Invoke(this, new TerminalInputEventArgs(ret, new[] { ret }));
                     _isReadingChar = false;
                 }
                 else if (_isReadingString)
@@ -318,7 +325,7 @@ namespace Chroma.FlexTerm
                     return;
 
                 VgaScreen.Cursor.Y--;
-                VgaScreen.Cursor.X = VgaScreen.WindowColumns + VgaScreen.Margins.Left;
+                VgaScreen.Cursor.X = VgaScreen.WindowColumns + VgaScreen.Margins.Left + 1;
             }
         }
 
@@ -379,7 +386,10 @@ namespace Chroma.FlexTerm
                 VgaScreen.PutCharAt(
                     VgaScreen.Cursor.X,
                     VgaScreen.Cursor.Y,
-                    c
+                    c,
+                    VgaScreen.ActiveForegroundColor,
+                    VgaScreen.ActiveBackgroundColor,
+                    false
                 );
 
                 AdvanceCursor();
@@ -397,7 +407,7 @@ namespace Chroma.FlexTerm
                 _inputBufferIndex = 0;
                 _inputBuffer.Clear();
 
-                InputReceived?.Invoke(this, new TerminalInputEventArgs(str));
+                InputReceived?.Invoke(this, new TerminalInputEventArgs(str, new Tokenizer(str).GetTokens()));
             }
         }
 
@@ -422,7 +432,7 @@ namespace Chroma.FlexTerm
 
             return new TrueTypeFont(
                 assemblyResourceStream,
-                DetermineFontSize(font),
+                DetermineFontHeight(font),
                 new string(BuildCodePage(font))
             );
         }
@@ -439,12 +449,13 @@ namespace Chroma.FlexTerm
                 TerminalFont.Tandy1K_II_9x14 => new(9, 14),
                 TerminalFont.EuroPC_9x14 => new(9, 14),
                 TerminalFont.Acer_9x14 => new(9, 14),
+                TerminalFont.ATI_9x16 => new (9, 16),
                 TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
             };
         }
 
-        private int DetermineFontSize(TerminalFont font)
+        private int DetermineFontHeight(TerminalFont font)
         {
             return font switch
             {
