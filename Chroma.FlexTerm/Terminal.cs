@@ -133,6 +133,21 @@ namespace Chroma.FlexTerm
                 Write(c);
         }
 
+        public void Cancel()
+        {
+            if (!IsReadingInput)
+                return;
+
+            _isReadingChar = false;
+            _isReadingString = false;
+            _isReadingKey = false;
+
+            _inputBuffer.Clear();
+            _inputQueue.Clear();
+
+            _inputBufferIndex = 0;
+        }
+
         public void Draw(RenderContext context)
         {
             VgaScreen.Draw(context);
