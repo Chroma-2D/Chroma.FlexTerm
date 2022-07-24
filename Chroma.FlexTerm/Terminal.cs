@@ -5,11 +5,11 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
+using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Chroma.MemoryManagement;
 using Chroma.SabreVGA;
-using Cursor = Chroma.Input.Cursor;
 
 namespace Chroma.FlexTerm
 {
@@ -28,6 +28,7 @@ namespace Chroma.FlexTerm
         private bool _isReadingString;
 
         private Dictionary<char, Action<Terminal>> _controlCodes = new();
+        private static Dictionary<TerminalFont, IFontProvider> _fontCache = new();
 
         public VgaScreen VgaScreen { get; }
 
@@ -68,6 +69,7 @@ namespace Chroma.FlexTerm
             );
 
             VgaScreen.Cursor.Shape = CursorShape.Underscore;
+            SetDefaultControlCodes();
         }
 
         public void SetControlCode(char c, Action<Terminal> handler)
@@ -502,6 +504,12 @@ namespace Chroma.FlexTerm
             SetControlCode((char)0x02, (t) => { t.StartOfInput(); });
             SetControlCode((char)0x03, (t) => { t.EndOfInput(); });
             SetControlCode((char)0x7F, (t) => { t.Delete(); });
+        }
+
+        protected override void FreeManagedResources()
+        {
+            (VgaScreen.Font as TrueTypeFont)!.Dispose();
+            VgaScreen.Dispose();
         }
     }
 }

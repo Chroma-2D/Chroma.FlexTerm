@@ -17,7 +17,7 @@
 
     <ItemGroup>
         <PackageReference Include="Chroma.SabreVGA" Version="13.0.0" />
-        <PackageReference Include="Chroma" Version="0.52.0" />
+        <PackageReference Include="Chroma" Version="0.52.2" />
     </ItemGroup>
 
     <ItemGroup>
