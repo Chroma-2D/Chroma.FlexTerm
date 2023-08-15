@@ -8,8 +8,8 @@ namespace Chroma.FlexTerm
         public InputType Type { get; }
         
         public KeyCode? Key { get; }
-        public string Text { get; }
-        public string[] Tokens { get; }
+        public string? Text { get; }
+        public string[]? Tokens { get; }
 
         internal TerminalInputEventArgs(string text, string[] tokens)
         {

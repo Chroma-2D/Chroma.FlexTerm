@@ -2,13 +2,14 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <PropertyGroup>
         <PackageId>Chroma.FlexTerm</PackageId>
-        <Version>6.0.0</Version>
+        <Version>6.1.0</Version>
         
-        <Author>Ciastex</Author>
+        <Author>vddCore</Author>
         <RepositoryType>git</RepositoryType>
         <Description>Flexible terminal emulator based on the SabreVGA text engine.</Description>
         <RepositoryUrl>https://github.com/Chroma-2D/Chroma.FlexTerm</RepositoryUrl>
@@ -16,28 +17,30 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Chroma.SabreVGA" Version="13.0.0" />
-        <PackageReference Include="Chroma" Version="0.52.2" />
+        <PackageReference Include="Chroma" Version="0.60.0" />
+        <PackageReference Include="Chroma.SabreVGA" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\Fonts\Acer_9x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\AST_8x19.ttf" />
         <EmbeddedResource Include="Resources\Fonts\ATI_9x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\ATT_PC6300_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\EuroPC_9x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\EverexME_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_CGA_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_Model3x_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\IBM_VGA_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\IGS_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\MBytePC_8x16.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\PhoenixVGA_8x14.ttf" />
+        <EmbeddedResource Include="Resources\Fonts\Siemens_PCD_8x14.ttf" /> 
+        <EmbeddedResource Include="Resources\Fonts\SperryPC_8x16.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Tandy1K_II_9x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\ToshibaSat_8x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Trident_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\Copam_8x8.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\PhoenixVGA_8x14.ttf" />
         <EmbeddedResource Include="Resources\Fonts\Verite_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\IBM_VGA_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\AST_8x19.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\SperryPC_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\IBM_CGA_8x8.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\IBM_Model3x_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\EverexME_8x16.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\NEC_MultiSpeed_8x8.ttf" />
-        <EmbeddedResource Include="Resources\Fonts\EuroPC_9x14.ttf" />
     </ItemGroup>
 </Project>

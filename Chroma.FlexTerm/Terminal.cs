@@ -29,19 +29,23 @@ namespace Chroma.FlexTerm
 
         private Dictionary<char, Action<Terminal>> _controlCodes = new();
         private static Dictionary<TerminalFont, IFontProvider> _fontCache = new();
+        
+        public Action<Terminal>? OnBeforeReadKey { get; set; }
+        public Action<Terminal>? OnBeforeReadChar { get; set; }
+        public Action<Terminal>? OnBeforeReadString { get; set; }
 
         public VgaScreen VgaScreen { get; }
 
         public bool IsReadingInput => _isReadingChar || _isReadingString;
         public bool EchoInput { get; set; } = true;
 
-        public event EventHandler<TerminalInputEventArgs> InputReceived;
+        public event EventHandler<TerminalInputEventArgs>? InputReceived;
 
         public Terminal(VgaScreen vgaScreen)
         {
             if (vgaScreen == null)
                 throw new ArgumentNullException(nameof(vgaScreen), "Terminal needs a VGA screen to function.");
-            
+
             VgaScreen = vgaScreen;
             SetDefaultControlCodes();
         }
@@ -88,6 +92,8 @@ namespace Chroma.FlexTerm
         {
             if (IsReadingInput)
                 return;
+            
+            OnBeforeReadKey?.Invoke(this);
 
             _inputStartX = VgaScreen.Cursor.X;
             _inputStartY = VgaScreen.Cursor.Y;
@@ -100,6 +106,8 @@ namespace Chroma.FlexTerm
             if (IsReadingInput)
                 return;
 
+            OnBeforeReadChar?.Invoke(this);
+
             _inputStartX = VgaScreen.Cursor.X;
             _inputStartY = VgaScreen.Cursor.Y;
 
@@ -110,6 +118,8 @@ namespace Chroma.FlexTerm
         {
             if (IsReadingInput)
                 return;
+
+            OnBeforeReadString?.Invoke(this);
 
             _inputStartX = VgaScreen.Cursor.X;
             _inputStartY = VgaScreen.Cursor.Y;
@@ -157,12 +167,6 @@ namespace Chroma.FlexTerm
 
         public void Update(float delta)
         {
-            if (!IsReadingInput)
-            {
-                VgaScreen.Cursor.Blink = false;
-                VgaScreen.Cursor.Visible = false;
-            }
-            
             VgaScreen.Update(delta);
 
             if (_pendingVisualUpdate)
@@ -181,7 +185,7 @@ namespace Chroma.FlexTerm
                 if (_isReadingChar)
                 {
                     var ret = c.ToString();
-                    
+
                     InputReceived?.Invoke(this, new TerminalInputEventArgs(ret, new[] { ret }));
                     _isReadingChar = false;
                 }
@@ -440,7 +444,7 @@ namespace Chroma.FlexTerm
             {
                 if (!retrying)
                     return LoadEmbeddedFont(TerminalFont.ToshibaSat_8x14, true);
-                
+
                 throw new ArgumentOutOfRangeException(
                     nameof(font),
                     "Couldn't find the requested embedded font and the fallback has failed."
@@ -463,10 +467,11 @@ namespace Chroma.FlexTerm
                 TerminalFont.NEC_MultiSpeed_8x8 => new(8, 8),
                 TerminalFont.ToshibaSat_8x14 => new(8, 14),
                 TerminalFont.PhoenixVGA_8x14 => new(8, 14),
+                TerminalFont.Siemens_PCD_8x14 => new(8, 14),
                 TerminalFont.Tandy1K_II_9x14 => new(9, 14),
                 TerminalFont.EuroPC_9x14 => new(9, 14),
                 TerminalFont.Acer_9x14 => new(9, 14),
-                TerminalFont.ATI_9x16 => new (9, 16),
+                TerminalFont.ATI_9x16 => new(9, 16),
                 TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
             };
