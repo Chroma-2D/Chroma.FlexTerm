@@ -7,7 +7,7 @@
     
     <PropertyGroup>
         <PackageId>Chroma.FlexTerm</PackageId>
-        <Version>6.1.0</Version>
+        <Version>6.2.0</Version>
         
         <Author>vddCore</Author>
         <RepositoryType>git</RepositoryType>
@@ -17,8 +17,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Chroma" Version="0.60.0" />
-        <PackageReference Include="Chroma.SabreVGA" Version="13.0.1" />
+        <PackageReference Include="Chroma" Version="0.61.0" />
+        <PackageReference Include="Chroma.SabreVGA" Version="14.0.0" />
     </ItemGroup>
 
     <ItemGroup>

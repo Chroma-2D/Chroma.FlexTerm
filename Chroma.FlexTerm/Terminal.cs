@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Chroma.MemoryManagement;
@@ -14,7 +12,7 @@ using Chroma.SabreVGA;
 namespace Chroma.FlexTerm
 {
     public class Terminal : DisposableResource
-    {
+    {        
         private Queue<char> _inputQueue = new();
         private List<char> _inputBuffer = new();
         private int _inputBufferIndex;
@@ -28,7 +26,6 @@ namespace Chroma.FlexTerm
         private bool _isReadingString;
 
         private Dictionary<char, Action<Terminal>> _controlCodes = new();
-        private static Dictionary<TerminalFont, IFontProvider> _fontCache = new();
         
         public Action<Terminal>? OnBeforeReadKey { get; set; }
         public Action<Terminal>? OnBeforeReadChar { get; set; }
@@ -53,7 +50,7 @@ namespace Chroma.FlexTerm
         public Terminal(VgaScreen vgaScreen, TerminalFont font)
             : this(vgaScreen)
         {
-            VgaScreen.Font = LoadEmbeddedFont(font);
+            VgaScreen.Font = TerminalFontStore.FetchEmbeddedFont(font);
             var cellSize = DetermineCellSizeForFont(font);
 
             VgaScreen.SetCellSizes(cellSize.Width, cellSize.Height);
@@ -67,7 +64,7 @@ namespace Chroma.FlexTerm
             VgaScreen = new VgaScreen(
                 position,
                 size,
-                LoadEmbeddedFont(font),
+                TerminalFontStore.FetchEmbeddedFont(font),
                 cellSize.Width,
                 cellSize.Height
             );
@@ -432,32 +429,6 @@ namespace Chroma.FlexTerm
             }
         }
 
-        private TrueTypeFont LoadEmbeddedFont(TerminalFont font, bool retrying = false)
-        {
-            var embeddedResourceString = $"Chroma.FlexTerm.Resources.Fonts.{font.ToString()}.ttf";
-
-            using var assemblyResourceStream = Assembly
-                .GetExecutingAssembly()
-                .GetManifestResourceStream(embeddedResourceString);
-
-            if (assemblyResourceStream == null)
-            {
-                if (!retrying)
-                    return LoadEmbeddedFont(TerminalFont.ToshibaSat_8x14, true);
-
-                throw new ArgumentOutOfRangeException(
-                    nameof(font),
-                    "Couldn't find the requested embedded font and the fallback has failed."
-                );
-            }
-
-            return new TrueTypeFont(
-                assemblyResourceStream,
-                DetermineFontHeight(font),
-                new string(BuildCodePage(font))
-            );
-        }
-
         private Size DetermineCellSizeForFont(TerminalFont font)
         {
             return font switch
@@ -474,30 +445,6 @@ namespace Chroma.FlexTerm
                 TerminalFont.ATI_9x16 => new(9, 16),
                 TerminalFont.AST_8x19 => new(8, 19),
                 _ => new(8, 16)
-            };
-        }
-
-        private int DetermineFontHeight(TerminalFont font)
-        {
-            return font switch
-            {
-                TerminalFont.Copam_8x8 => 8,
-                TerminalFont.IBM_CGA_8x8 => 8,
-                TerminalFont.NEC_MultiSpeed_8x8 => 8,
-                TerminalFont.AST_8x19 => 20,
-                _ => 16
-            };
-        }
-
-        protected virtual char[] BuildCodePage(TerminalFont font)
-        {
-            return font switch
-            {
-                TerminalFont.ToshibaSat_8x14 => CodePage.BuildCodePage437Plus(),
-                TerminalFont.IBM_VGA_8x16 => CodePage.BuildCodePage437Plus(),
-                TerminalFont.AST_8x19 => CodePage.BuildCodePage437Plus(),
-                TerminalFont.IBM_CGA_8x8 => CodePage.BuildCodePage437Plus(),
-                _ => CodePage.BuildCodePage437()
             };
         }
 
