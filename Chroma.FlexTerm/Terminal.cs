@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
@@ -26,7 +27,8 @@ namespace Chroma.FlexTerm
         private bool _isReadingString;
 
         private Dictionary<char, Action<Terminal>> _controlCodes = new();
-        
+        private TerminalInputEventArgs? _lastInputInfo;
+
         public Action<Terminal>? OnBeforeReadKey { get; set; }
         public Action<Terminal>? OnBeforeReadChar { get; set; }
         public Action<Terminal>? OnBeforeReadString { get; set; }
@@ -124,6 +126,21 @@ namespace Chroma.FlexTerm
             _isReadingString = true;
         }
 
+        public async Task<TerminalInputEventArgs?> ReadLineAsync()
+        {
+            return await Task.Run(async () =>
+            {
+                ReadLine();
+                
+                while (_isReadingString)
+                {
+                    await Task.Delay(1);
+                }
+
+                return _lastInputInfo;
+            });
+        }
+
         public void Write(char c)
         {
             if (_controlCodes.ContainsKey(c))
@@ -147,14 +164,15 @@ namespace Chroma.FlexTerm
             if (!IsReadingInput)
                 return;
 
-            _isReadingChar = false;
-            _isReadingString = false;
-            _isReadingKey = false;
-
             _inputBuffer.Clear();
             _inputQueue.Clear();
 
             _inputBufferIndex = 0;
+            _lastInputInfo = null;
+            
+            _isReadingChar = false;
+            _isReadingString = false;
+            _isReadingKey = false;
         }
 
         public void Draw(RenderContext context)
@@ -164,6 +182,15 @@ namespace Chroma.FlexTerm
 
         public void Update(float delta)
         {
+            if (_isReadingKey || IsReadingInput)
+            {
+                VgaScreen.Cursor.IsVisible = true;
+            }
+            else
+            {
+                VgaScreen.Cursor.IsVisible = false;
+            }
+            
             VgaScreen.Update(delta);
 
             if (_pendingVisualUpdate)
@@ -220,6 +247,9 @@ namespace Chroma.FlexTerm
                 InputReceived?.Invoke(this, new TerminalInputEventArgs(e.KeyCode));
                 return;
             }
+
+            if (!IsReadingInput)
+                return;
 
             switch (e.KeyCode)
             {
@@ -425,7 +455,8 @@ namespace Chroma.FlexTerm
                 _inputBufferIndex = 0;
                 _inputBuffer.Clear();
 
-                InputReceived?.Invoke(this, new TerminalInputEventArgs(str, new Tokenizer(str).GetTokens()));
+                _lastInputInfo = new TerminalInputEventArgs(str, new Tokenizer(str).GetTokens());
+                InputReceived?.Invoke(this, _lastInputInfo);
             }
         }
 
