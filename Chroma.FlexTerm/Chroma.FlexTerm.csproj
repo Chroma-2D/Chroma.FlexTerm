@@ -3,6 +3,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -17,7 +19,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Chroma" Version="0.61.0" />
+        <PackageReference Include="Chroma" Version="0.62.1" />
         <PackageReference Include="Chroma.SabreVGA" Version="14.0.0" />
     </ItemGroup>
 
